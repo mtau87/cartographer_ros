@@ -17,6 +17,7 @@
 #ifndef CARTOGRAPHER_RVIZ_SRC_SUBMAPS_DISPLAY_H_
 #define CARTOGRAPHER_RVIZ_SRC_SUBMAPS_DISPLAY_H_
 
+#include <map>
 #include <memory>
 #include <vector>
 
@@ -49,6 +50,7 @@ class SubmapsDisplay
 
  private Q_SLOTS:
   void Reset();
+  void AllEnabledToggled();
 
  private:
   void CreateClient();
@@ -66,9 +68,12 @@ class SubmapsDisplay
   ::rviz::StringProperty* submap_query_service_property_;
   ::rviz::StringProperty* map_frame_property_;
   ::rviz::StringProperty* tracking_frame_property_;
-  using Trajectory = std::vector<std::unique_ptr<DrawableSubmap>>;
+  using Trajectory = std::pair<std::unique_ptr<::rviz::Property>,
+                               std::map<int, std::unique_ptr<DrawableSubmap>>>;
   std::vector<Trajectory> trajectories_ GUARDED_BY(mutex_);
   ::cartographer::common::Mutex mutex_;
+  ::rviz::Property* submaps_category_;
+  ::rviz::BoolProperty* visibility_all_enabled_;
 };
 
 }  // namespace cartographer_rviz

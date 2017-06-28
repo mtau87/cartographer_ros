@@ -12,7 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-int32 trajectory_id
-int32 submap_index
-int32 submap_version
-geometry_msgs/Pose pose
+string tracking_frame
+string published_frame
+string odom_frame
+bool provide_odom_frame
+bool use_odometry
+bool use_laser_scan
+bool use_multi_echo_laser_scan
+int32 num_point_clouds
+
+# This is a binary-encoded
+# 'cartographer.mapping.proto.TrajectoryBuilderOptions' proto.
+string trajectory_builder_options_proto

@@ -22,13 +22,16 @@
 #include <unordered_set>
 
 #include "cartographer/mapping/map_builder.h"
+#include "cartographer/mapping/proto/trajectory_builder_options.pb.h"
 #include "cartographer_ros/node_options.h"
 #include "cartographer_ros/sensor_bridge.h"
 #include "cartographer_ros/tf_bridge.h"
+#include "cartographer_ros/trajectory_options.h"
 #include "cartographer_ros_msgs/SubmapEntry.h"
 #include "cartographer_ros_msgs/SubmapList.h"
 #include "cartographer_ros_msgs/SubmapQuery.h"
 #include "nav_msgs/OccupancyGrid.h"
+#include "visualization_msgs/MarkerArray.h"
 
 namespace cartographer_ros {
 
@@ -38,16 +41,18 @@ class MapBuilderBridge {
     cartographer::mapping::TrajectoryBuilder::PoseEstimate pose_estimate;
     cartographer::transform::Rigid3d local_to_map;
     std::unique_ptr<cartographer::transform::Rigid3d> published_to_tracking;
+    TrajectoryOptions trajectory_options;
   };
 
-  MapBuilderBridge(const NodeOptions& options, tf2_ros::Buffer* tf_buffer);
+  MapBuilderBridge(const NodeOptions& node_options, tf2_ros::Buffer* tf_buffer);
 
   MapBuilderBridge(const MapBuilderBridge&) = delete;
   MapBuilderBridge& operator=(const MapBuilderBridge&) = delete;
 
   int AddTrajectory(const std::unordered_set<string>& expected_sensor_ids,
-                    const string& tracking_frame);
+                    const TrajectoryOptions& trajectory_options);
   void FinishTrajectory(int trajectory_id);
+  void SerializeState(const string& stem);
   void WriteAssets(const string& stem);
 
   bool HandleSubmapQuery(
@@ -57,16 +62,17 @@ class MapBuilderBridge {
   cartographer_ros_msgs::SubmapList GetSubmapList();
   std::unique_ptr<nav_msgs::OccupancyGrid> BuildOccupancyGrid();
   std::unordered_map<int, TrajectoryState> GetTrajectoryStates();
+  visualization_msgs::MarkerArray GetTrajectoryNodesList();
 
   SensorBridge* sensor_bridge(int trajectory_id);
 
  private:
-  const NodeOptions options_;
-
-  std::deque<cartographer::mapping::TrajectoryNode::ConstantData>
-      constant_data_;
+  const NodeOptions node_options_;
   cartographer::mapping::MapBuilder map_builder_;
   tf2_ros::Buffer* const tf_buffer_;
+
+  // These are keyed with 'trajectory_id'.
+  std::unordered_map<int, TrajectoryOptions> trajectory_options_;
   std::unordered_map<int, std::unique_ptr<SensorBridge>> sensor_bridges_;
 };
 

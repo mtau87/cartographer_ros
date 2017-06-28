@@ -20,23 +20,22 @@ set(PACKAGE_DEPENDENCIES
   geometry_msgs
 )
 
-find_package(cartographer REQUIRED)
-include("${CARTOGRAPHER_CMAKE_DIR}/functions.cmake")
-google_initialize_cartographer_project()
-
 find_package(catkin REQUIRED COMPONENTS message_generation ${PACKAGE_DEPENDENCIES})
 
 add_message_files(
   FILES
     SubmapList.msg
-    TrajectorySubmapList.msg
     SubmapEntry.msg
+    SensorTopics.msg
+    TrajectoryOptions.msg
 )
 
 add_service_files(
   FILES
     SubmapQuery.srv
     FinishTrajectory.srv
+    StartTrajectory.srv
+    WriteAssets.srv
 )
 
 generate_messages(

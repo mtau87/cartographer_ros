@@ -48,23 +48,20 @@ target_link_libraries(${PROJECT_NAME} PUBLIC ${QT_LIBRARIES})
 if(rviz_QT_VERSION VERSION_LESS "5")
   message(STATUS "Using Qt4 based on the rviz_QT_VERSION: ${rviz_QT_VERSION}")
   find_package(Qt4 ${rviz_QT_VERSION} EXACT REQUIRED QtCore QtGui)
-  include_directories(${Qt4_INCLUDE_DIRS})
   include(${QT_USE_FILE})
 else()
   message(STATUS "Using Qt5 based on the rviz_QT_VERSION: ${rviz_QT_VERSION}")
   find_package(Qt5 ${rviz_QT_VERSION} EXACT REQUIRED Core Widgets)
-  find_package(Qt5Widgets REQUIRED)
   set(QT_LIBRARIES Qt5::Widgets)
   include_directories(${Qt5Widgets_INCLUDE_DIRS})
-  include_directories(${Qt5_INCLUDE_DIRS})
 endif()
 add_definitions(-DQT_NO_KEYWORDS)
 
 # Add the binary directory first, so that port.h is included after it has
 # been generated.
 target_include_directories(${PROJECT_NAME} PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}>
-    $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}>
+    $<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>
     $<INSTALL_INTERFACE:include>
 )
 

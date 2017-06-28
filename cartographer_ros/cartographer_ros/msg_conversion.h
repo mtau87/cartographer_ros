@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-#ifndef CARTOGRAPHER_ROS_GOOGLE_CARTOGRAPHER_SRC_MSG_CONVERSION_H_
-#define CARTOGRAPHER_ROS_GOOGLE_CARTOGRAPHER_SRC_MSG_CONVERSION_H_
+#ifndef CARTOGRAPHER_ROS_MSG_CONVERSION_H_
+#define CARTOGRAPHER_ROS_MSG_CONVERSION_H_
 
 #include "cartographer/common/port.h"
 #include "cartographer/kalman_filter/pose_tracker.h"
 #include "cartographer/sensor/point_cloud.h"
-#include "cartographer/sensor/proto/sensor.pb.h"
 #include "cartographer/transform/rigid_transform.h"
 #include "geometry_msgs/Pose.h"
 #include "geometry_msgs/Transform.h"
@@ -35,22 +34,9 @@
 
 namespace cartographer_ros {
 
-// Returns a laser scan consisting of the first echo of each beam.
-sensor_msgs::LaserScan ToLaserScan(
-    int64 timestamp, const string& frame_id,
-    const ::cartographer::sensor::proto::LaserScan& laser_scan);
-
-sensor_msgs::MultiEchoLaserScan ToMultiEchoLaserScanMessage(
-    int64 timestamp, const string& frame_id,
-    const ::cartographer::sensor::proto::LaserScan& laser_scan);
-
 sensor_msgs::PointCloud2 ToPointCloud2Message(
     int64 timestamp, const string& frame_id,
     const ::cartographer::sensor::PointCloud& point_cloud);
-
-sensor_msgs::PointCloud2 ToPointCloud2Message(
-    int64 timestamp, const string& frame_id,
-    const ::cartographer::sensor::proto::LaserFan& laser_fan);
 
 geometry_msgs::Transform ToGeometryMsgTransform(
     const ::cartographer::transform::Rigid3d& rigid3d);
@@ -58,11 +44,16 @@ geometry_msgs::Transform ToGeometryMsgTransform(
 geometry_msgs::Pose ToGeometryMsgPose(
     const ::cartographer::transform::Rigid3d& rigid3d);
 
-::cartographer::sensor::proto::LaserScan ToCartographer(
+geometry_msgs::Point ToGeometryMsgPoint(const Eigen::Vector3d& vector3d);
+
+::cartographer::sensor::PointCloudWithIntensities ToPointCloudWithIntensities(
     const sensor_msgs::LaserScan& msg);
 
-::cartographer::sensor::proto::LaserScan ToCartographer(
+::cartographer::sensor::PointCloudWithIntensities ToPointCloudWithIntensities(
     const sensor_msgs::MultiEchoLaserScan& msg);
+
+::cartographer::sensor::PointCloudWithIntensities ToPointCloudWithIntensities(
+    const sensor_msgs::PointCloud2& message);
 
 ::cartographer::transform::Rigid3d ToRigid3d(
     const geometry_msgs::TransformStamped& transform);
@@ -78,4 +69,4 @@ Eigen::Quaterniond ToEigen(const geometry_msgs::Quaternion& quaternion);
 
 }  // namespace cartographer_ros
 
-#endif  // CARTOGRAPHER_ROS_GOOGLE_CARTOGRAPHER_SRC_MSG_CONVERSION_H_
+#endif  // CARTOGRAPHER_ROS_MSG_CONVERSION_H_
